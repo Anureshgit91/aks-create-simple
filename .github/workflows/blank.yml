@@ -8,21 +8,19 @@ pull_request:
 branches:
 - main
 
-
 permissions:
 id-token: write
 contents: read
 
 jobs:
 terraform:
-
-```
 runs-on: self-hosted
 
+```
 defaults:
   run:
     shell: pwsh
-    working-directory: terraform-modules/examples
+    working-directory: .
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -31,11 +29,10 @@ env:
   ARM_USE_OIDC: true
 
 steps:
-
   - name: Checkout Repository
     uses: actions/checkout@v4
 
-  - name: Azure Login (OIDC)
+  - name: Azure Login
     uses: azure/login@v2
     with:
       client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -43,39 +40,24 @@ steps:
       subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   - name: Verify Azure Login
-    run: |
-      az account show
+    run: az account show
 
   - name: Setup Terraform
     uses: hashicorp/setup-terraform@v3
     with:
       terraform_wrapper: false
 
-  - name: Verify Working Directory
-    run: |
-      Write-Host "Current Path:"
-      Get-Location
-
-      Write-Host "Terraform Files:"
-      Get-ChildItem -Recurse *.tf
-
   - name: Terraform Version
     run: terraform version
 
-  - name: Terraform Format Check
-    run: terraform fmt -check -recursive
-
   - name: Terraform Init
-    run: terraform init -upgrade -input=false
+    run: terraform init -upgrade
 
   - name: Terraform Validate
     run: terraform validate
 
   - name: Terraform Plan
-    run: terraform plan -out=tfplan -input=false
-
-  - name: Show Plan
-    run: terraform show -no-color tfplan
+    run: terraform plan -out=tfplan
 
   - name: Terraform Apply
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
