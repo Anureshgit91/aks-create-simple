@@ -1,5 +1,0 @@
-location            = "Central India"
-resource_group_name = "contoso-dev-rg"
-aks_name            = "contoso-dev-aks"
-acr_name            = "contosodevacr001"
-kubernetes_version  = "1.33"
