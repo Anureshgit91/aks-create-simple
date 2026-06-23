@@ -42,6 +42,11 @@ steps:
   - name: Verify Azure Login
     run: az account show
 
+  - name: Verify Files
+    run: |
+      Get-Location
+      Get-ChildItem
+
   - name: Setup Terraform
     uses: hashicorp/setup-terraform@v3
     with:
